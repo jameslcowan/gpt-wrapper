@@ -8,6 +8,21 @@ function addMessage(content, role) {
     div.textContent = content;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
+    return div;
+}
+
+function showLoading() {
+    const div = document.createElement("div");
+    div.className = "message assistant loading";
+    div.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+    div.id = "loading-indicator";
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function hideLoading() {
+    const loader = document.getElementById("loading-indicator");
+    if (loader) loader.remove();
 }
 
 chatForm.addEventListener("submit", async (e) => {
@@ -18,6 +33,7 @@ chatForm.addEventListener("submit", async (e) => {
     addMessage(message, "user");
     messageInput.value = "";
     messageInput.disabled = true;
+    showLoading();
 
     try {
         const response = await fetch("/chat", {
@@ -35,6 +51,7 @@ chatForm.addEventListener("submit", async (e) => {
     } catch (err) {
         addMessage(`Error: ${err.message}`, "assistant");
     } finally {
+        hideLoading();
         messageInput.disabled = false;
         messageInput.focus();
     }
